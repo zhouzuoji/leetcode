@@ -22,15 +22,15 @@ inline void writeJson(std::ostream& out, const char* &value) {
 template<typename _Iterator>
 void writeArray(std::ostream& out, _Iterator begin, _Iterator end) {
 	if (begin == end)
-		cout << "[]";
+		out << "[]";
 	else {
-		cout << '[';
+		out << '[';
 		writeJson(out, *(begin++));
 		while (begin != end) {
-			cout << ", ";
+			out << ", ";
 			writeJson(out, *(begin++));
 		}
-		cout << ']';
+		out << ']';
 	}
 }
 
@@ -42,5 +42,5 @@ void writeJson(std::ostream& out, const std::vector<_Type> &arr) {
 template<typename _Type>
 std::ostream& operator<<(std::ostream& out, const std::vector<_Type> &arr) {
 	writeArray(out, arr.begin(), arr.end());
-	return cout;
+	return out;
 }

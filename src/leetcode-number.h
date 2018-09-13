@@ -15,4 +15,5 @@ namespace leetcode {
 	bool judgeSquareSum(int c);
 	int findNthDigit(int n);
 	int findUnsortedSubarray(const std::vector<int>& nums);
+	string numberToWords(int num);
 }

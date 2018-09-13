@@ -3,22 +3,24 @@
 
 using namespace std;
 
+#define DBG_PRINT(x, ...)	printf((x), ##__VA_ARGS__)
+
 namespace leetcode {
 	namespace expr {
-		enum class NodeType { parenthese_open, parenthese_close, _operator, operand, call};
-		enum class Operator {plus, substract, multiply, divide};
+		enum class NodeType { parenthese_open, parenthese_close, _operator, operand, call };
+		enum class Operator { plus, substract, multiply, divide };
 		typedef struct _Node {
 			NodeType type;
 			union {
 				Operator _operator;
 				int operand;
 			};
-			_Node() {} 
+			_Node() {}
 			_Node(NodeType type) : type(type) {}
-			_Node(int _operand): type(NodeType::operand), operand(_operand) {}
+			_Node(int _operand) : type(NodeType::operand), operand(_operand) {}
 			_Node(Operator __operator) : type(NodeType::_operator), _operator(__operator) {}
 		} Node;
-		
+
 		char OperatorToStr(Operator _operator) {
 			switch (_operator) {
 			case Operator::plus: return '+';
@@ -35,9 +37,9 @@ namespace leetcode {
 				Node x = stk.top();
 				stk.pop();
 				if (x.type == NodeType::_operator)
-					printf("%c\n", OperatorToStr(x._operator));
-				else if (x.type==NodeType::operand)
-					printf("%d\n", x.operand);
+					DBG_PRINT("%c\n", OperatorToStr(x._operator));
+				else if (x.type == NodeType::operand)
+					DBG_PRINT("%d\n", x.operand);
 			}
 		}
 
@@ -65,30 +67,30 @@ namespace leetcode {
 					stk1.pop();
 					na = stk1.top();
 					stk1.pop();
-					if (na.type == NodeType::_operator) {					
+					if (na.type == NodeType::_operator) {
 						stk2.push(nb);
 						stk2.push(na);
 						continue;
 					}
 					stk2.pop();
 				}
-				
+
 				int a = na.operand, b = nb.operand;
 				switch (x._operator) {
 				case Operator::plus:
-					printf("%d + %d\n", a, b);
+					DBG_PRINT("%d + %d\n", a, b);
 					a += b;
 					break;
 				case Operator::substract:
-					printf("%d - %d\n", a, b);
+					DBG_PRINT("%d - %d\n", a, b);
 					a -= b;
 					break;
 				case Operator::multiply:
-					printf("%d * %d\n", a, b);
+					DBG_PRINT("%d * %d\n", a, b);
 					a *= b;
 					break;
 				case Operator::divide:
-					printf("%d / %d\n", a, b);
+					DBG_PRINT("%d / %d\n", a, b);
 					a /= b;
 					break;
 				}
@@ -105,7 +107,7 @@ namespace leetcode {
 			while (i < n) {
 				while (i < n && s[i] <= 32) ++i;
 				if (i == n) break;
-				//printf("start s[%d]: %c\n", i, s[i]);
+				//DBG_PRINT("start s[%d]: %c\n", i, s[i]);
 				switch (s[i]) {
 				case '(':
 					stk2.emplace(NodeType::parenthese_open);
@@ -115,18 +117,18 @@ namespace leetcode {
 					if (!stk2.empty()) {
 						Node tmp = stk2.top();
 						if (tmp.type != NodeType::parenthese_open) {
-							printf("push operator %c\n", OperatorToStr(tmp._operator));
+							DBG_PRINT("push operator %c\n", OperatorToStr(tmp._operator));
 							stk1.push(tmp);
 							stk2.pop();
 						}
 					}
 					break;
 				case '+':
-					printf("pending operator %c\n", s[i]);
+					DBG_PRINT("pending operator %c\n", s[i]);
 					stk2.emplace(Operator::plus);
 					break;
 				case '-':
-					printf("pending operator %c\n", s[i]);
+					DBG_PRINT("pending operator %c\n", s[i]);
 					stk2.emplace(Operator::substract);
 					break;
 				default:
@@ -137,12 +139,12 @@ namespace leetcode {
 						++i;
 					}
 					--i;
-					printf("push operand %d\n", x);
+					DBG_PRINT("push operand %d\n", x);
 					stk1.push(x);
 					if (!stk2.empty()) {
-						Node tmp=stk2.top();
+						Node tmp = stk2.top();
 						if (tmp.type != NodeType::parenthese_open) {
-							printf("push operator %c\n", OperatorToStr(tmp._operator));
+							DBG_PRINT("push operator %c\n", OperatorToStr(tmp._operator));
 							stk1.push(tmp);
 							stk2.pop();
 						}
@@ -151,35 +153,57 @@ namespace leetcode {
 				}
 				++i;
 			}
-			//printf("****************************\n");
-			//dump_reverse_polish(stk1);
+			DBG_PRINT("****************************\n");
+			dump_reverse_polish(stk1);
 			return stk1;
 		}
 
-		void calc(stack<Node>& stk, Operator _operator) {
+		static void calc(stack<Node>& stk, Operator _operator) {
 			int b = stk.top().operand;
 			stk.pop();
 			int a = stk.top().operand;
 			stk.pop();
 			switch (_operator) {
 			case Operator::plus:
-				printf("%d + %d\n", a, b);
+				DBG_PRINT("%d + %d\n", a, b);
 				a += b;
 				break;
 			case Operator::substract:
-				printf("%d - %d\n", a, b);
+				DBG_PRINT("%d - %d\n", a, b);
 				a -= b;
 				break;
 			case Operator::multiply:
-				printf("%d * %d\n", a, b);
+				DBG_PRINT("%d * %d\n", a, b);
 				a *= b;
 				break;
 			case Operator::divide:
-				printf("%d / %d\n", a, b);
+				DBG_PRINT("%d / %d\n", a, b);
 				a /= b;
 				break;
 			}
 			stk.push(a);
+		}
+
+		static void checkOperator(stack<Node>& stk1, stack<Node>& stk2) {
+			if (stk2.empty()) return;
+			Node tmp = stk2.top();
+			if (tmp.type != NodeType::_operator) return;
+			DBG_PRINT("push operator %c\n", OperatorToStr(tmp._operator));
+			stk2.pop();
+			calc(stk1, tmp._operator);
+		}
+
+		static void feedOperand(stack<Node>& stk1, stack<Node>& stk2, int num) {
+			DBG_PRINT("push operand %d\n", num);
+			stk1.push(num);
+			if (stk2.empty()) return;
+			Node tmp = stk2.top();
+			if (tmp.type != NodeType::_operator) return;
+			if (tmp._operator == Operator::multiply || tmp._operator == Operator::divide) {
+				DBG_PRINT("push operator %c\n", OperatorToStr(tmp._operator));
+				stk2.pop();
+				calc(stk1, tmp._operator);
+			}
 		}
 
 		int eval(const string& s) {
@@ -189,52 +213,40 @@ namespace leetcode {
 			while (i < n) {
 				while (i < n && s[i] <= 32) ++i;
 				if (i == n) break;
-				//printf("start s[%d]: %c\n", i, s[i]);
+				//DBG_PRINT("start s[%d]: %c\n", i, s[i]);
 				switch (s[i]) {
 				case '(':
 					stk2.emplace(NodeType::parenthese_open);
 					break;
 				case ')':
+					checkOperator(stk1, stk2);
 					stk2.pop();
-					if (!stk2.empty()) {
-						Node tmp = stk2.top();
-						if (tmp.type != NodeType::parenthese_open) {
-							stk2.pop();
-							calc(stk1, tmp._operator);
-						}
-					}
 					break;
-				case '+':
-					printf("pending operator %c\n", s[i]);
-					stk2.emplace(Operator::plus);
-					break;
+				case '+':;
 				case '-':
-					printf("pending operator %c\n", s[i]);
-					stk2.emplace(Operator::substract);
+					checkOperator(stk1, stk2);
+					DBG_PRINT("pending operator %c\n", s[i]);
+					stk2.emplace(s[i] == '+' ? Operator::plus : Operator::substract);
+					break;
+				case '*':;
+				case '/':
+					DBG_PRINT("pending operator %c\n", s[i]);
+					stk2.emplace(s[i] == '*' ? Operator::multiply : Operator::divide);
 					break;
 				default:
-				{
-					int x = 0;
+					int num = 0;
 					while (i < n && isdigit(s[i])) {
-						x = x * 10 + s[i] - '0';
+						num = num * 10 + s[i] - '0';
 						++i;
 					}
 					--i;
-					printf("push operand %d\n", x);
-					stk1.push(x);
-					if (!stk2.empty()) {
-						Node tmp = stk2.top();
-						if (tmp.type != NodeType::parenthese_open) {
-							printf("push operator %c\n", OperatorToStr(tmp._operator));
-							stk2.pop();
-							calc(stk1, tmp._operator);
-						}
-					}
-				}
+					feedOperand(stk1, stk2, num);
 				}
 				++i;
 			}
+			checkOperator(stk1, stk2);
 			return stk1.top().operand;
 		}
 	}
+
 } // namespace leetcode

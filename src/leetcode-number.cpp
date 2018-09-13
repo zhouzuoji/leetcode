@@ -629,4 +629,55 @@ namespace leetcode {
 		}
 		return ans;
 	}
+
+	static constexpr const char* Ones[19] = { "One ", "Two ", "Three ", "Four ", "Five ", "Six ", "Seven ", "Eight ", "Nine ",
+						 "Ten ", "Eleven ", "Twelve ", "Thirteen ", "Fourteen ", "Fifteen ", "Sixteen ", "Seventeen ", "Eighteen ", "Nineteen " };
+	static constexpr const char* Tens[8] = { "Twenty ", "Thirty ", "Forty ", "Fifty ", "Sixty ", "Seventy ", "Eighty ", "Ninety " };
+	static void belowThousand(string& ans, int num) {
+		int x = num / 100;
+		if (x) {
+			num %= 100;
+			ans.append(Ones[x - 1]);
+			ans.append("Hundred ");
+		}
+		if (!num)
+			return;
+		if (num < 20) {
+			ans.append(Tens[num - 1]);
+			return;
+		}
+		x = num / 10;
+		num %= 10;
+		ans.append(Tens[x - 2]);
+		if (num)
+			ans.append(Ones[num - 1]);
+	}
+
+	string numberToWords(int num) {
+		string ans;
+		int x = num / 1000000000;
+		if (x) {
+			num %= 1000000000;
+			ans.append(Ones[x - 1]);
+			ans.append("Billion ");
+		}
+
+		x = num / 1000000;
+		if (x) {
+			num %= 1000000;
+			belowThousand(ans, x);
+			ans.append("Million ");
+		}
+
+		x = num / 1000;
+		if (x) {
+			num %= 1000;
+			belowThousand(ans, x);
+			ans.append("Thousand ");
+		}
+
+		belowThousand(ans, num);
+		ans.pop_back();
+		return ans;
+	}
 }

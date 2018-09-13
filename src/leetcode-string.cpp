@@ -533,4 +533,35 @@ namespace leetcode {
 
 		return dp[len1][len2];
 	}
+
+	size_t kmp(const std::string& pattern, const std::string& text) {
+		size_t plen = pattern.size(), tlen = text.size();
+		if (!plen)
+			return 0;
+		if (!tlen)
+			return string::npos;
+		vector<short> pmt(plen);
+		pmt[0] = 0;
+		for (size_t i = 1; i < plen; ++i) {
+			int t = pmt[i - 1];
+			while (t > 0 && pattern[t]!=pattern[i])
+				t = pmt[t - 1];
+			pmt[i] = pattern[t] == pattern[i] ? t + 1 : t;
+		}
+		size_t i = 0, j = 0;
+		while (i < plen && j < tlen) {
+			if (pattern[i] == text[j]) {
+				++i; ++j;
+			}
+			else if (i)
+				i = pmt[i - 1];
+			else
+				++j;
+		}
+		return i == plen ? j - plen : string::npos;
+	}
+
+	size_t BoyerMoore(const std::string& pattern, const std::string& text) {
+		return string::npos;
+	}
 }
